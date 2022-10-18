@@ -101,15 +101,18 @@ module Aws
       expect(c.expiration).to eq(in_one_hour)
     end
 
-    it 'refreshes asynchronously' do
-      # expiration 6 minutes out, within the async exp time window
-      allow(credentials).to receive(:expiration).and_return(Time.now + (6*60))
-      expect(client).to receive(:assume_role).at_least(2).times
-      expect(Thread).to receive(:new).and_yield
-      c = AssumeRoleCredentials.new(
-        role_arn: 'arn',
-        role_session_name: 'session')
-      c.credentials
+    context 'if async_refresh is passed in' do
+      it 'refreshes asynchronously' do
+        # expiration 6 minutes out, within the async exp time window
+        allow(credentials).to receive(:expiration).and_return(Time.now + (6*60))
+        expect(client).to receive(:assume_role).at_least(2).times
+        expect(Thread).to receive(:new).and_yield
+        c = AssumeRoleCredentials.new(
+          role_arn: 'arn',
+          role_session_name: 'session',
+          async_refresh: true)
+        c.credentials
+      end
     end
 
     it 'refreshes credentials automatically when they are near expiration' do

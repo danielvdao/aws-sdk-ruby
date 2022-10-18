@@ -163,18 +163,21 @@ module Aws
       expect(c.expiration).to eq(in_one_hour)
     end
 
-    it 'refreshes asynchronously' do
-      # expiration 6 minutes out, within the async exp time window
-      allow(credentials).to receive(:expiration).and_return(Time.now + (6*60))
-      expect(client).to receive(:assume_role_with_web_identity).exactly(2).times
-      expect(File).to receive(:read).with(token_file_path).exactly(2).times
-      expect(Thread).to receive(:new).and_yield
+    context "if async_refresh is passed in" do
+      it 'refreshes asynchronously' do
+        # expiration 6 minutes out, within the async exp time window
+        allow(credentials).to receive(:expiration).and_return(Time.now + (6*60))
+        expect(client).to receive(:assume_role_with_web_identity).exactly(2).times
+        expect(File).to receive(:read).with(token_file_path).exactly(2).times
+        expect(Thread).to receive(:new).and_yield
 
-      c = AssumeRoleWebIdentityCredentials.new(
-        role_arn: 'arn',
-        web_identity_token_file: token_file_path,
-        role_session_name: 'session')
-      c.credentials
+        c = AssumeRoleWebIdentityCredentials.new(
+          role_arn: 'arn',
+          web_identity_token_file: token_file_path,
+          role_session_name: 'session',
+          async_refresh: true)
+        c.credentials
+      end
     end
 
     it 'auto refreshes credentials when near expiration' do
