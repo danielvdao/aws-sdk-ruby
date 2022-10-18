@@ -3,7 +3,6 @@
 require 'set'
 require 'securerandom'
 require 'base64'
-require 'pry'
 
 module Aws
   # An auto-refreshing credential provider that assumes a role via
