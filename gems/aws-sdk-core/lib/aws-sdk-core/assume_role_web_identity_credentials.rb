@@ -3,6 +3,7 @@
 require 'set'
 require 'securerandom'
 require 'base64'
+require 'pry'
 
 module Aws
   # An auto-refreshing credential provider that assumes a role via
@@ -47,7 +48,7 @@ module Aws
       client_opts = {}
       @assume_role_web_identity_params = {}
       @token_file = options.delete(:web_identity_token_file)
-      @async_refresh = true
+      @async_refresh = options[:async_refresh] == true
       options.each_pair do |key, value|
         if self.class.assume_role_web_identity_options.include?(key)
           @assume_role_web_identity_params[key] = value

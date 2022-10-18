@@ -86,7 +86,7 @@ module Aws
       client_opts[:credentials] = nil
 
       @client = options[:client] || Aws::SSO::Client.new(client_opts)
-      @async_refresh = true
+      @async_refresh = options[:async_refresh] == true
       super
     end
 
